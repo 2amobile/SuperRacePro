@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperRace Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Titillium+Web:wght@600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e53935; /* Rouge Racing */
+            --primary-color-dark: #c62828;
+            --secondary-color: #37474f; /* Gris-Bleu Foncé */
+            --secondary-color-light: #546e7a;
+            --background-color-light: #f4f6f8;
+            --surface-color-light: #ffffff;
+            --text-color-light: #263238;
+            --text-color-secondary-light: #5f737f;
+            --border-color-light: #e0e0e0;
+
+            --background-color-dark: #1e2021;
+            --surface-color-dark: #2c2f32;
+            --text-color-dark: #e8eaed;
+            --text-color-secondary-dark: #a0a0a0;
+            --border-color-dark: #424242;
+
+            --current-bg: var(--background-color-light);
+            --current-surface: var(--surface-color-light);
+            --current-text: var(--text-color-light);
+            --current-text-secondary: var(--text-color-secondary-light);
+            --current-border: var(--border-color-light);
+        }
+
+        body.dark-mode {
+            --current-bg: var(--background-color-dark);
+            --current-surface: var(--surface-color-dark);
+            --current-text: var(--text-color-dark);
+            --current-text-secondary: var(--text-color-secondary-dark);
+            --current-border: var(--border-color-dark);
+        }
+
+        /* Styles généraux */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--current-surface);
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+            border: 1px solid var(--current-border);
+        }
+
+        .app-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header h1 {
+            font-family: 'Titillium Web', sans-serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Toggle Mode Sombre */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 48px;
+        }
+        .theme-switch input {
+            display:none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 3px;
+            content: "";
+            height: 18px;
+            left: 3px;
+            position: absolute;
+            transition: .4s;
+            width: 18px;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        .theme-switch-wrapper span {
+            margin-left: 8px;
+            font-size: 0.8em;
+        }
+
+
+        /* Sections principales */
+        .main-content {
+            padding: 20px;
+        }
+        .section {
+            background-color: var(--current-surface);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--current-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .section-title {
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 600;
+            font-size: 1.4em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color-dark);
+            display: flex;
+            align-items: center;
+        }
+        .section-title.collapsible-header { /* Specific for collapsible headers */
+            justify-content: space-between;
+            cursor: pointer;
+            margin-bottom: 0; /* Remove bottom margin if content is collapsed */
+             transition: margin-bottom 0.3s ease-out;
+        }
+         .collapsible-section.expanded .section-title.collapsible-header {
+            margin-bottom: 20px; /* Add back margin when expanded */
+        }
+
+        .section-title svg {
+            margin-right: 10px;
+            fill: var(--primary-color);
+        }
+        .collapse-icon {
+            font-size: 1.5em; /* Make it more visible */
+            font-weight: bold;
+            transition: transform 0.3s ease;
+            padding: 0 5px; /* Clickable area */
+            line-height: 1;
+            user-select: none; /* Prevent text selection */
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), padding-top 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), margin-top 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), border-top-width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            padding-top: 0;
+            margin-top: 0;
+            border-top: 0px solid transparent;
+        }
+        .collapsible-section.expanded .collapsible-content {
+            max-height: 1000px; /* Adjust if content is very long */
+            padding-top: 20px; 
+            margin-top: 15px;
+            border-top: 1px solid var(--current-border);
+        }
+        .collapsible-section.expanded .collapse-icon {
+            transform: rotate(45deg); /* '+' to 'x' like */
+        }
+
+
+        /* Groupes d'inputs */
+        .input-group {
+            margin-bottom: 18px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--current-text-secondary);
+            font-size: 0.9em;
+        }
+        input[type="text"], input[type="number"], input[type="tel"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--current-border);
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="tel"]:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.25);
+            outline: none;
+        }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f737f' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        body.dark-mode select {
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0a0a0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        }
+
+
+        .laps-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .laps-input-group input[type="number"] {
+            text-align: center;
+            flex-grow: 1;
+            min-width: 60px;
+        }
+        .laps-input-group button {
+            padding: 10px 12px;
+            font-size: 1em;
+            min-width: 40px;
+            line-height: 1;
+        }
+
+        /* Boutons */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            width: 100%;
+            margin-top: 10px;
+            gap: 8px; /* Espace pour icône */
+        }
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .button svg {
+            width: 1em;
+            height: 1em;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 3px 8px rgba(229, 57, 53, 0.25);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-color-dark);
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        }
+        .btn-secondary {
+            background-color: var(--secondary-color-light);
+            color: white;
+            box-shadow: 0 3px 8px rgba(84, 110, 122, 0.25);
+        }
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(55, 71, 79, 0.3);
+        }
+        .btn-danger-small {
+            background-color: #757575;
+            color: white;
+            padding: 6px 10px;
+            font-size: 0.8em;
+            text-transform: none;
+            letter-spacing: normal;
+            width: auto;
+            margin-top: 0;
+        }
+        .btn-danger-small:hover { background-color: #616161; }
+        
+        .laps-input-group .button, .session-actions .button { 
+             width: auto;
+             margin-top: 0;
+        }
+        .session-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap; 
+        }
+        .session-actions .button {
+            flex-grow: 1; 
+        }
+
+
+        /* Liste des pilotes */
+        #pilotsListDisplay {
+            list-style: none;
+        }
+        #pilotsListDisplay li {
+            background-color: var(--current-bg);
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--current-border);
+            font-size: 0.95em;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        #pilotsListDisplay li strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Tableau des résultats */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            min-width: 550px;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden; 
+            border: 1px solid var(--current-border);
+        }
+        th, td {
+            border-bottom: 1px solid var(--current-border);
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom-width: 2px; 
+        }
+        tr:last-child td {
+            border-bottom: none; 
+        }
+        tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02); 
+        }
+        body.dark-mode tr:nth-child(even) {
+            background-color: rgba(255,255,255,0.03);
+        }
+        tr:hover {
+            background-color: var(--primary-color-dark);
+            color: white;
+        }
+        tr:hover strong { color: white;}
+
+
+        /* Assistant de Départ */
+        .race-start-assistant {
+            text-align: center;
+        }
+        #currentStartingPilot {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+        #countdownTimerDisplay {
+            font-size: 3em;
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 900;
+            margin: 10px 0 20px;
+            color: var(--current-text);
+        }
+        #raceStartMessage {
+            font-style: italic;
+            color: var(--current-text-secondary);
+        }
+        .start-button-container {
+            margin-top: 20px;
+        }
+
+
+        /* Messages et erreurs */
+        .message-area {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        .message-error {
+            color: #b71c1c;
+            background-color: #ffcdd2;
+            border: 1px solid #ef9a9a;
+        }
+        .message-success {
+            color: #1b5e20;
+            background-color: #c8e6c9;
+            border: 1px solid #a5d6a7;
+        }
+
+        /* Modale */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        .modal-box {
+            background: var(--current-surface);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .modal-box p {
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            color: var(--current-text);
+        }
+        .modal-box input[type="text"] { margin-bottom: 15px; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-actions .button {
+            flex-grow: 1;
+            margin-top: 0; 
+        }
+
+
+        /* Responsive pour desktop */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .app-container { padding: 0; }
+            .app-header h1 { font-size: 2em; }
+            .main-content { padding: 30px 40px; }
+            .section { padding: 25px; margin-bottom: 30px; }
+            .section-title { font-size: 1.6em; }
+             .section-title.collapsible-header {
+                margin-bottom: 0; 
+            }
+            .collapsible-section.expanded .section-title.collapsible-header {
+                margin-bottom: 20px; 
+            }
+            .input-group label { font-size: 1em; }
+            .laps-input-group input[type="number"] { min-width: 80px; }
+            .laps-input-group button { padding: 12px 15px; font-size: 1em; }
+            .button { width: auto; margin-top: 0; font-size: 1em; padding: 12px 25px; }
+            .session-actions .button { width: auto; } 
+             #pilotsListDisplay li { font-size: 1em; padding: 15px 20px; }
+            th, td { padding: 14px 18px; font-size: 0.95em; }
+            .message-area { font-size: 1em; padding: 12px 18px; }
+            #currentStartingPilot { font-size: 1.8em; }
+            #countdownTimerDisplay { font-size: 3.5em; }
+        }
+        
+        .icon-settings, .icon-pilots, .icon-grid, .icon-rocket, 
+        .icon-save, .icon-folder-open, .icon-file-plus, 
+        .icon-trash, .icon-play, .icon-calculate, .icon-plus { 
+            display: inline-block; /* Ensure SVG takes space */
+            vertical-align: middle; /* Align with text */
+        }
+        .icon-settings, .icon-pilots, .icon-grid, .icon-rocket { width: 1.2em; height: 1.2em; }
+        .icon-save, .icon-folder-open, .icon-file-plus, 
+        .icon-trash, .icon-play, .icon-calculate, .icon-plus { width: 1em; height: 1em; }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <h1>SuperRace Pro</h1>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="themeToggleCheckbox">
+                    <input type="checkbox" id="themeToggleCheckbox">
+                    <span class="slider"></span>
+                </label>
+                </div>
+        </header>
+
+        <main class="main-content">
+            <section class="section collapsible-section" id="sessionManagementSection">
+                <h2 class="section-title collapsible-header" id="sessionHeader">
+                    <div style="display: flex; align-items: center;">
+                        <svg class="icon-settings" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.23C14.34,2,14.09,1.86,13.83,1.86 h-3.66c-0.26,0-0.51,0.14-0.57,0.37L9.21,4.65c-0.59,0.24-1.13,0.57-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22 L2.69,8.17c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.78,10.7,4.76,11,4.76,11.3c0,0.3,0.02,0.6,0.06,0.89L2.81,13.77 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.39,2.42 c0.05,0.24,0.3,0.38,0.56,0.38h3.66c0.26,0,0.51-0.14,0.57-0.37l0.39-2.42c0.59-0.24,1.13-0.57,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                        Gestion de Session
+                    </div>
+                    <span class="collapse-icon" id="sessionCollapseIcon">+</span>
+                </h2>
+                <div class="collapsible-content" id="sessionContent">
+                    <div class="input-group">
+                        <label for="sessionName">Nom de la Session Actuelle :</label>
+                        <input type="text" id="sessionName" value="Session par Défaut">
+                    </div>
+                    <div class="input-group">
+                        <label for="savedSessionsDropdown">Charger une Session :</label>
+                        <select id="savedSessionsDropdown">
+                            <option value="">-- Aucune session sauvegardée --</option>
+                        </select>
+                    </div>
+                    <div class="session-actions">
+                        <button id="newSessionBtn" class="button btn-secondary">
+                            <svg class="icon-file-plus" viewBox="0 0 16 16"><path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/></svg>
+                            Nouvelle
+                        </button>
+                        <button id="saveSessionBtn" class="button btn-primary">
+                             <svg class="icon-save" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/></svg>
+                            Sauvegarder
+                        </button>
+                        <button id="deleteSessionBtn" class="button btn-danger-small" style="background-color: #6c757d;">
+                            <svg class="icon-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                            Suppr. Session
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="courseParamsSection">
+                <h2 class="section-title">
+                     <svg class="icon-settings" viewBox="0 0 24 24"><path d="M12 6.5c2.481 0 4.5 2.019 4.5 4.5s-2.019 4.5-4.5 4.5S7.5 13.481 7.5 11 9.519 6.5 12 6.5M12 5C8.686 5 6 7.686 6 11s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 14.5c-4.687 0-8.5-3.813-8.5-8.5S7.313 2.5 12 2.5s8.5 3.813 8.5 8.5-3.813 8.5-8.5 8.5zm0-16C7.86 3.5 4.5 6.86 4.5 11s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5S16.14 3.5 12 3.5zM19.95 8.636l-1.794-1.036c.19-.44.304-.914.304-1.412s-.113-.972-.304-1.412l1.794-1.036c.24-.138.32-.456.194-.714l-1.5-2.598c-.128-.222-.408-.306-.65-.194l-2.13 1.23c-.58-.348-1.225-.603-1.91-.74L13.5 1.13c-.06-.27-.308-.466-.59-.466h-3c-.28 0-.528.195-.59.465l-.45 2.032c-.685.137-1.33.392-1.91.74L4.93 2.976c-.24-.11-.52-.027-.65.195l-1.5 2.598c-.127.258-.045.576.195.714l1.793 1.036C4.573 7.964 4.46 8.438 4.46 8.936s.114.972.305 1.412L3.03 11.384c-.24.138-.32.456-.195.714l1.5 2.598c.128.222.408.306.65.194l2.13-1.23c.58.348 1.225.603 1.91.74l.45 2.032c.06.27.308.465.59.465h3c.28 0 .528-.195.59-.465l.45-2.032c.685-.137 1.33-.392 1.91-.74l2.13 1.23c.24.11.52.027-.65-.195l1.5-2.598c.127-.258.045-.576-.195-.714z"/></svg>
+                    Paramètres de la Course
+                </h2>
+                <div class="input-group">
+                    <label for="numLaps">Nombre de tours de course :</label>
+                    <div class="laps-input-group">
+                        <button id="decrementLaps" class="button btn-secondary">-</button>
+                        <input type="number" id="numLaps" value="10" min="1">
+                        <button id="incrementLaps" class="button btn-secondary">+</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="pilotsManagementSection">
+                <h2 class="section-title">
+                    <svg class="icon-pilots" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    Gestion des Pilotes
+                </h2>
+                <div class="input-group">
+                    <label for="pilotNameInput">Nom du Pilote :</label>
+                    <input type="text" id="pilotNameInput" placeholder="Ex: Fabio Quartararo" list="pilotNamesDatalist" autocapitalize="words">
+                    <datalist id="pilotNamesDatalist"></datalist>
+                </div>
+                <div class="input-group">
+                    <label for="pilotTimeInput">Temps Superpole (meilleur tour) :</label>
+                    <input type="tel" id="pilotTimeInput" placeholder="Ex: 58.345 ou 1:02.123" inputmode="decimal">
+                </div>
+                <button id="addPilotBtn" class="button btn-primary">
+                    <svg class="icon-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    Ajouter Pilote
+                </button>
+                <div id="pilotMessageArea" class="message-area" style="display: none;"></div>
+                
+                <h3 style="margin-top: 25px; margin-bottom: 10px; font-size: 1.1em; color: var(--current-text-secondary);">Pilotes Inscrits (<span id="pilotCount">0</span>)</h3>
+                <ul id="pilotsListDisplay">
+                    </ul>
+            </section>
+
+            <section class="section" id="resultsSection">
+                 <h2 class="section-title">
+                    <svg class="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zm0 8h6v6H4zm8-8h6v6h-6zm0 8h6v6h-6z"/></svg>
+                    Grille de Départ et Écarts
+                </h2>
+                <button id="calculateGridBtn" class="button btn-primary">
+                    <svg class="icon-calculate" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2zm13 2H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3zM1 14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v12zm5.5-9.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1zM11 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/></svg>
+                    Calculer la Grille
+                </button>
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Ordre</th>
+                                <th>Nom du Pilote</th>
+                                <th>Écart / Précédent (x Tours)</th>
+                                <th>Temps Superpole</th>
+                                <th>Temps Départ Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p id="noResultsMessage" style="text-align: center; padding: 15px; color: var(--current-text-secondary); font-size: 0.9em;">Aucun calcul effectué.</p>
+            </section>
+
+            <section class="section" id="raceStartSection" style="display: none;">
+                <h2 class="section-title">
+                    <svg class="icon-rocket" viewBox="0 0 24 24"><path d="M13.122 2.303a.75.75 0 00-1.06-.28l-7.5 5.25a.75.75 0 00-.28 1.061L6.75 13.5l-2.428 5.464a.75.75 0 00.964 1.004L10.5 17.25l5.186 2.468a.75.75 0 001.06-.28l5.25-7.5a.75.75 0 00-.28-1.06L13.5 8.25l5.464-2.428a.75.75 0 001.004-.964L17.25 0l-2.468 5.186zM12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/></svg>
+                    Assistant de Départ
+                </h2>
+                <div class="race-start-assistant">
+                    <div id="currentStartingPilot">En attente...</div>
+                    <div id="countdownTimerDisplay">0.000 s</div>
+                    <div class="start-button-container">
+                         <button id="masterStartRaceBtn" class="button btn-primary">
+                            <svg class="icon-play" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+                            Lancer la Procédure de Départ
+                        </button>
+                        </div>
+                    <p id="raceStartMessage" style="margin-top:15px;">Cliquez pour commencer.</p>
+                </div>
+            </section>
+             <button id="fullResetAppBtn" class="button btn-danger-small" style="background-color: #b71c1c; width:100%; margin-top: 20px;">
+                <svg class="icon-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                Réinitialisation Complète de l'App
+            </button>
+        </main>
+    </div>
+
+<script>
+    // --- State Variables ---
+    let currentSession = {
+        name: "Session par Défaut",
+        laps: 10,
+        pilots: []
+    };
+    let savedSessions = [];
+    const SESSIONS_STORAGE_KEY = 'superRaceProSessions';
+    const THEME_STORAGE_KEY = 'superRaceProTheme';
+    const SESSION_COLLAPSE_KEY = 'superRaceProSessionCollapsed';
+
+
+    let raceStartInterval = null;
+    let countdownTime = 0;
+    let departureTimes = []; 
+    let isRaceProcedureActive = false;
+
+
+    // --- DOM Elements ---
+    const themeToggle = document.getElementById('themeToggleCheckbox');
+    const sessionNameInput = document.getElementById('sessionName');
+    const savedSessionsDropdown = document.getElementById('savedSessionsDropdown');
+    const newSessionBtn = document.getElementById('newSessionBtn');
+    const saveSessionBtn = document.getElementById('saveSessionBtn');
+    const deleteSessionBtn = document.getElementById('deleteSessionBtn');
+    
+    const numLapsInput = document.getElementById('numLaps');
+    const decrementLapsBtn = document.getElementById('decrementLaps');
+    const incrementLapsBtn = document.getElementById('incrementLaps');
+    
+    const pilotNameInput = document.getElementById('pilotNameInput');
+    const pilotTimeInput = document.getElementById('pilotTimeInput');
+    const addPilotBtn = document.getElementById('addPilotBtn');
+    const pilotMessageArea = document.getElementById('pilotMessageArea');
+    const pilotsListDisplay = document.getElementById('pilotsListDisplay');
+    const pilotCountSpan = document.getElementById('pilotCount');
+    
+    const calculateGridBtn = document.getElementById('calculateGridBtn');
+    const resultsTableBody = document.querySelector('#resultsTable tbody');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+
+    const raceStartSection = document.getElementById('raceStartSection');
+    const currentStartingPilotDisplay = document.getElementById('currentStartingPilot');
+    const countdownTimerDisplay = document.getElementById('countdownTimerDisplay');
+    const masterStartRaceBtn = document.getElementById('masterStartRaceBtn');
+    const raceStartMessage = document.getElementById('raceStartMessage');
+    const fullResetAppBtn = document.getElementById('fullResetAppBtn');
+
+    const sessionHeader = document.getElementById('sessionHeader');
+    const sessionContent = document.getElementById('sessionContent'); 
+    const sessionManagementSectionEl = document.getElementById('sessionManagementSection');
+    const sessionCollapseIcon = document.getElementById('sessionCollapseIcon');
+
+
+    // --- Theme Management ---
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.checked = true;
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggle.checked = false;
+        }
+    }
+    themeToggle.addEventListener('change', () => {
+        const newTheme = themeToggle.checked ? 'dark' : 'light';
+        localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        applyTheme(newTheme);
+    });
+
+    // --- Collapsible Session Section ---
+    function applySessionCollapseState(isCollapsed) {
+        if (isCollapsed) {
+            sessionManagementSectionEl.classList.remove('expanded');
+            sessionCollapseIcon.textContent = '+';
+        } else {
+            sessionManagementSectionEl.classList.add('expanded');
+            sessionCollapseIcon.textContent = '−'; // Using a minus sign for expanded
+        }
+    }
+    sessionHeader.addEventListener('click', () => {
+        const isCurrentlyExpanded = sessionManagementSectionEl.classList.contains('expanded');
+        applySessionCollapseState(isCurrentlyExpanded); // Toggle: if expanded, collapse it (true)
+        localStorage.setItem(SESSION_COLLAPSE_KEY, isCurrentlyExpanded); // Save the new collapsed state
+    });
+
+
+    // --- Session Management ---
+    function loadSessions() {
+        const stored = localStorage.getItem(SESSIONS_STORAGE_KEY);
+        savedSessions = stored ? JSON.parse(stored) : [];
+        populateSessionsDropdown();
+        if (savedSessions.length > 0) {
+            loadSessionData(savedSessions[0]);
+        } else {
+            loadSessionData({ name: "Session par Défaut", laps: 10, pilots: [] }); 
+        }
+    }
+
+    function populateSessionsDropdown() {
+        savedSessionsDropdown.innerHTML = '<option value="">-- Charger une session --</option>';
+        savedSessions.forEach((session, index) => {
+            const option = document.createElement('option');
+            option.value = index; 
+            option.textContent = session.name;
+            savedSessionsDropdown.appendChild(option);
+        });
+        if (savedSessions.length === 0) {
+             savedSessionsDropdown.innerHTML = '<option value="">-- Aucune session sauvegardée --</option>';
+        }
+    }
+    
+    function updateCurrentSessionUI() {
+        sessionNameInput.value = currentSession.name;
+        numLapsInput.value = currentSession.laps;
+        displayPilotsUI(); 
+        clearResultsTable();
+        raceStartSection.style.display = 'none'; 
+    }
+
+    function loadSessionData(sessionData) {
+        if (!sessionData) return;
+        currentSession = JSON.parse(JSON.stringify(sessionData)); 
+        updateCurrentSessionUI();
+    }
+
+    savedSessionsDropdown.addEventListener('change', (e) => {
+        const sessionIndex = e.target.value;
+        if (sessionIndex !== "") {
+            loadSessionData(savedSessions[parseInt(sessionIndex)]);
+        }
+    });
+
+    newSessionBtn.addEventListener('click', () => {
+        showModal("Créer une nouvelle session ? Les modifications non sauvegardées de la session actuelle seront perdues.", () => {
+            loadSessionData({ name: "Nouvelle Session " + (savedSessions.length + 1), laps: 10, pilots: [] });
+            savedSessionsDropdown.value = ""; 
+        });
+    });
+
+    saveSessionBtn.addEventListener('click', () => {
+        currentSession.name = sessionNameInput.value.trim() || "Session Sans Nom";
+        currentSession.laps = parseInt(numLapsInput.value, 10) || 10;
+
+        const existingSessionIndex = savedSessions.findIndex(s => s.name.toLowerCase() === currentSession.name.toLowerCase());
+        if (existingSessionIndex > -1) {
+            showModal(`Une session nommée "${currentSession.name}" existe déjà. L'écraser ?`, () => {
+                savedSessions[existingSessionIndex] = JSON.parse(JSON.stringify(currentSession)); 
+                finalizeSave();
+            });
+        } else {
+            savedSessions.push(JSON.parse(JSON.stringify(currentSession)));
+            finalizeSave();
+        }
+        
+        function finalizeSave() {
+            localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(savedSessions));
+            populateSessionsDropdown();
+            const newIndex = savedSessions.findIndex(s => s.name === currentSession.name);
+            if(newIndex > -1) savedSessionsDropdown.value = newIndex;
+            showPilotMessage(`Session "${currentSession.name}" sauvegardée !`, 'success');
+        }
+    });
+
+    deleteSessionBtn.addEventListener('click', () => {
+        const selectedIndex = savedSessionsDropdown.value;
+        if (selectedIndex === "" || !savedSessions[parseInt(selectedIndex)]) {
+            showPilotMessage("Veuillez sélectionner une session à supprimer.", "error");
+            return;
+        }
+        const sessionToDelete = savedSessions[parseInt(selectedIndex)];
+        showModal(`Êtes-vous sûr de vouloir supprimer la session "${sessionToDelete.name}" ? Cette action est irréversible.`, () => {
+            savedSessions.splice(parseInt(selectedIndex), 1);
+            localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(savedSessions));
+            populateSessionsDropdown();
+            if (currentSession.name === sessionToDelete.name) {
+                 loadSessionData({ name: "Session par Défaut", laps: 10, pilots: [] });
+            }
+            showPilotMessage(`Session "${sessionToDelete.name}" supprimée.`, "success");
+        });
+    });
+
+    // --- Pilot Management ---
+    function formatPilotName(nameStr) {
+        if (!nameStr) return "";
+        return nameStr.trim().toLowerCase().split('-')
+            .map(part => part.length > 0 ? part.charAt(0).toUpperCase() + part.slice(1) : "")
+            .join('-');
+    }
+
+    function showPilotMessage(message, type = 'error') {
+        pilotMessageArea.textContent = message;
+        pilotMessageArea.className = `message-area message-${type}`;
+        pilotMessageArea.style.display = 'block';
+        setTimeout(() => {
+            pilotMessageArea.style.display = 'none';
+        }, 3000);
+    }
+    
+    function updatePilotNamesDatalist() {
+        pilotNamesDatalist.innerHTML = ''; 
+        const uniqueNames = new Set(currentSession.pilots.map(p => p.name)); 
+        uniqueNames.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            pilotNamesDatalist.appendChild(option);
+        });
+    }
+
+    function displayPilotsUI() {
+        pilotsListDisplay.innerHTML = '';
+        const sortedForDisplay = [...currentSession.pilots].sort((a, b) => a.name.localeCompare(b.name));
+
+        sortedForDisplay.forEach((pilot) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${pilot.name}: <strong>${formatDisplayTime(pilot.time)}</strong></span>
+                <button class="button btn-danger-small" data-name="${pilot.name}">
+                    <svg class="icon-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                </button> 
+            `;
+            pilotsListDisplay.appendChild(li);
+        });
+        pilotCountSpan.textContent = currentSession.pilots.length;
+        addRemovePilotListeners();
+        updatePilotNamesDatalist(); 
+    }
+
+    function addRemovePilotListeners() {
+        document.querySelectorAll('#pilotsListDisplay .btn-danger-small').forEach(button => {
+            button.onclick = (event) => {
+                const nameToRemove = event.currentTarget.dataset.name;
+                const pilotIndex = currentSession.pilots.findIndex(p => p.name === nameToRemove);
+                if (pilotIndex > -1) {
+                   currentSession.pilots.splice(pilotIndex, 1);
+                   displayPilotsUI();
+                   clearResultsTable(); 
+                }
+            };
+        });
+    }
+    
+    addPilotBtn.addEventListener('click', () => {
+        let name = pilotNameInput.value.trim();
+        const timeStr = pilotTimeInput.value.trim();
+        
+        if (!name) {
+            showPilotMessage("Veuillez entrer un nom pour le pilote.");
+            pilotNameInput.focus();
+            return;
+        }
+        name = formatPilotName(name);
+
+        if (!timeStr) {
+            showPilotMessage("Veuillez entrer un temps pour le pilote.");
+            pilotTimeInput.focus();
+            return;
+        }
+        const time = parseTime(timeStr); 
+
+        if (!isNaN(time)) { 
+            const existingPilotIndex = currentSession.pilots.findIndex(p => p.name === name);
+            if (existingPilotIndex > -1) {
+                currentSession.pilots[existingPilotIndex].time = time;
+                showPilotMessage(`Temps mis à jour pour ${name}.`, 'success');
+            } else {
+                currentSession.pilots.push({ name, time });
+            }
+            pilotNameInput.value = ''; 
+            pilotTimeInput.value = '';
+            displayPilotsUI();
+            clearResultsTable();
+            pilotNameInput.focus();
+        }
+    });
+
+
+    // --- Time Formatting & Parsing ---
+    function formatTimeForInput(seconds) {
+        if (isNaN(seconds) || seconds === null) return "";
+        const totalSeconds = parseFloat(seconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = (totalSeconds % 60);
+        return minutes > 0 ? `${minutes}:${remainingSeconds.toFixed(3).padStart(6, '0')}` : remainingSeconds.toFixed(3);
+    }
+    function parseTime(timeStr) {
+        timeStr = timeStr.trim().replace(',', '.');
+        let timeInSeconds;
+        if (timeStr.includes(':')) {
+            const parts = timeStr.split(':');
+            if (parts.length === 2) {
+                const minutes = parseFloat(parts[0]);
+                const seconds = parseFloat(parts[1]);
+                if (!isNaN(minutes) && minutes >= 0 && !isNaN(seconds) && seconds >= 0 && seconds < 60) {
+                   timeInSeconds = (minutes * 60) + seconds;
+                }
+            }
+        } else {
+            timeInSeconds = parseFloat(timeStr);
+        }
+        if (!isNaN(timeInSeconds) && timeInSeconds > 0) {
+            pilotMessageArea.style.display = 'none'; 
+            return timeInSeconds;
+        } else {
+            showPilotMessage("Format temps invalide. Utilisez 'SS.ms' ou 'M:SS.ms'.");
+            return NaN;
+        }
+    }
+    function formatDisplayTime(seconds) {
+        if (isNaN(seconds) || seconds === null) return "N/A";
+        const totalSeconds = parseFloat(seconds.toFixed(3));
+        const minutes = Math.floor(totalSeconds / 60);
+        const remainingSeconds = (totalSeconds % 60);
+        return `${minutes}:${remainingSeconds.toFixed(3).padStart(6, '0')}`;
+    }
+    function formatDelay(seconds) {
+        if (isNaN(seconds) || seconds === null) return "N/A";
+        return seconds.toFixed(3) + " s";
+    }
+
+    // --- Laps Management ---
+    decrementLapsBtn.addEventListener('click', () => {
+        let val = parseInt(numLapsInput.value, 10);
+        if (val > 1) numLapsInput.value = val - 1;
+        currentSession.laps = parseInt(numLapsInput.value, 10); 
+        clearResultsTable();
+    });
+    incrementLapsBtn.addEventListener('click', () => {
+        numLapsInput.value = parseInt(numLapsInput.value, 10) + 1;
+        currentSession.laps = parseInt(numLapsInput.value, 10); 
+        clearResultsTable();
+    });
+     numLapsInput.addEventListener('change', () => {
+        currentSession.laps = parseInt(numLapsInput.value, 10) || 10;
+        clearResultsTable();
+    });
+
+
+    // --- Grid Calculation & Display ---
+    function clearResultsTable() {
+        resultsTableBody.innerHTML = '';
+        noResultsMessage.style.display = 'block';
+        raceStartSection.style.display = 'none'; 
+        resetRaceAssistant(); 
+    }
+
+    calculateGridBtn.addEventListener('click', () => {
+        const numLaps = parseInt(numLapsInput.value, 10);
+        if (isNaN(numLaps) || numLaps <= 0) {
+            showPilotMessage("Nombre de tours invalide."); return;
+        }
+        if (currentSession.pilots.length < 1) {
+            showPilotMessage("Veuillez ajouter au moins un pilote."); return;
+        }
+
+        const sortedPilotsForCalc = [...currentSession.pilots].sort((a, b) => b.time - a.time); 
+        resultsTableBody.innerHTML = '';
+        noResultsMessage.style.display = 'none';
+        raceStartSection.style.display = 'block'; 
+        
+        departureTimes = []; 
+        let cumulativeDepartureTime = 0;
+        let previousPilotTime = sortedPilotsForCalc.length > 0 ? sortedPilotsForCalc[0].time : 0;
+
+        sortedPilotsForCalc.forEach((pilot, index) => {
+            let individualDelayFromPrevious = 0;
+            if (index > 0) {
+                const timeDifference = previousPilotTime - pilot.time;
+                individualDelayFromPrevious = timeDifference * numLaps;
+                cumulativeDepartureTime += individualDelayFromPrevious;
+            }
+            
+            departureTimes.push({
+                name: pilot.name,
+                superpoleTime: pilot.time,
+                incrementalDelay: index > 0 ? individualDelayFromPrevious : 0, 
+                totalDepartureTime: cumulativeDepartureTime
+            });
+
+            const row = resultsTableBody.insertRow();
+            row.insertCell(0).textContent = index + 1;
+            row.insertCell(1).textContent = pilot.name;
+            row.insertCell(2).textContent = (index > 0) ? formatDelay(individualDelayFromPrevious) : "---";
+            row.insertCell(3).textContent = formatDisplayTime(pilot.time);
+            row.insertCell(4).textContent = formatDelay(cumulativeDepartureTime);
+            previousPilotTime = pilot.time;
+        });
+        resetRaceAssistant(); 
+    });
+
+    // --- Race Start Assistant ---
+    function resetRaceAssistant() {
+        clearInterval(raceStartInterval);
+        isRaceProcedureActive = false; 
+        masterStartRaceBtn.innerHTML = `
+            <svg class="icon-play" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+            Lancer la Procédure de Départ
+        `;
+        masterStartRaceBtn.disabled = false;
+
+        if (departureTimes.length > 0) {
+            currentStartingPilotDisplay.textContent = `Prêt pour: ${departureTimes[0].name}`;
+            countdownTimerDisplay.textContent = "0.000 s";
+            raceStartMessage.textContent = "Cliquez sur 'Lancer la Procédure' pour commencer.";
+        } else {
+            currentStartingPilotDisplay.textContent = "Aucun pilote";
+            // raceStartSection.style.display = 'none'; // This is handled by clearResultsTable
+        }
+    }
+
+    masterStartRaceBtn.addEventListener('click', () => {
+        clearInterval(raceStartInterval); 
+        isRaceProcedureActive = false;    
+
+        if (departureTimes.length === 0) {
+            raceStartMessage.textContent = "Calculez la grille d'abord pour lancer la procédure.";
+            resetRaceAssistant(); 
+            return;
+        }
+
+        isRaceProcedureActive = true; 
+        
+        masterStartRaceBtn.innerHTML = `
+            <svg class="icon-play" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+            Relancer la Procédure
+        `;
+        masterStartRaceBtn.disabled = true; 
+
+        currentStartingPilotDisplay.textContent = `AU DÉPART: ${departureTimes[0].name}`;
+        countdownTimerDisplay.textContent = "GO!"; 
+        
+        setTimeout(() => { 
+            if (!isRaceProcedureActive) {
+                 masterStartRaceBtn.disabled = false; // Ensure re-enabled if stopped during GO!
+                 return;
+            }
+
+            if (departureTimes.length > 1) { 
+                raceStartMessage.textContent = `Préparation pour ${departureTimes[1].name}...`;
+                startCountdown(1); 
+            } else {
+                raceStartMessage.textContent = `${departureTimes[0].name} est parti ! Course terminée.`;
+                resetRaceAssistant(); 
+            }
+        }, 1000); 
+    });
+
+
+    function startCountdown(pilotIndexToStart) { 
+        if (!isRaceProcedureActive) { 
+            resetRaceAssistant();
+            return;
+        }
+         if (pilotIndexToStart >= departureTimes.length) { // Should not happen if logic is correct before call
+            resetRaceAssistant(); 
+            return;
+        }
+
+
+        const pilotToStartData = departureTimes[pilotIndexToStart];
+        countdownTime = pilotToStartData.incrementalDelay;
+
+        currentStartingPilotDisplay.textContent = `Prochain: ${pilotToStartData.name}`;
+        countdownTimerDisplay.textContent = formatDelay(countdownTime);
+        raceStartMessage.textContent = `En attente du départ de ${pilotToStartData.name}`;
+
+        raceStartInterval = setInterval(() => {
+            if (!isRaceProcedureActive) { 
+                clearInterval(raceStartInterval);
+                return;
+            }
+            countdownTime -= 0.01; 
+            if (countdownTime <= 0) {
+                clearInterval(raceStartInterval);
+                
+                currentStartingPilotDisplay.textContent = `AU DÉPART: ${pilotToStartData.name}`;
+                countdownTimerDisplay.textContent = "GO!";
+                
+                setTimeout(() => {
+                    if (!isRaceProcedureActive) return; 
+                    const nextPilotIndex = pilotIndexToStart + 1;
+                    if (nextPilotIndex < departureTimes.length) {
+                        raceStartMessage.textContent = `Préparation pour ${departureTimes[nextPilotIndex].name}...`;
+                        startCountdown(nextPilotIndex);
+                    } else {
+                        currentStartingPilotDisplay.textContent = "Course Terminée";
+                        countdownTimerDisplay.textContent = "FIN";
+                        raceStartMessage.textContent = "Tous les pilotes sont partis !";
+                        resetRaceAssistant();
+                    }
+                }, 1000); 
+
+            } else {
+                countdownTimerDisplay.textContent = formatDelay(countdownTime);
+            }
+        }, 10);
+    }
+    
+    // --- Full App Reset ---
+    fullResetAppBtn.addEventListener('click', () => {
+        showModal("ATTENTION ! Ceci effacera TOUTES les sessions sauvegardées et réinitialisera l'application. Êtes-vous sûr ?", () => {
+            localStorage.removeItem(SESSIONS_STORAGE_KEY);
+            localStorage.removeItem(THEME_STORAGE_KEY); 
+            localStorage.removeItem(SESSION_COLLAPSE_KEY);
+            savedSessions = [];
+            loadSessionData({ name: "Session par Défaut", laps: 10, pilots: [] });
+            populateSessionsDropdown();
+            applyTheme('light'); 
+            applySessionCollapseState(true); // Default to collapsed
+            showPilotMessage("Application réinitialisée.", "success");
+        });
+    });
+
+    // --- Modal Function ---
+    function showModal(message, onConfirm, showInput = false) {
+        const existingModal = document.querySelector('.modal-overlay');
+        if (existingModal) existingModal.remove();
+
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        
+        const modalBox = document.createElement('div');
+        modalBox.className = 'modal-box';
+        
+        const p = document.createElement('p');
+        p.textContent = message;
+        modalBox.appendChild(p);
+
+        let inputField;
+        if (showInput) {
+            inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.placeholder = "Nom de la session";
+            inputField.style.marginBottom = '15px'; 
+            modalBox.appendChild(inputField);
+        }
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'modal-actions';
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent = 'Confirmer';
+        confirmBtn.className = 'button btn-primary';
+        confirmBtn.onclick = () => {
+            if (showInput) {
+                onConfirm(inputField.value);
+            } else {
+                onConfirm();
+            }
+            modalOverlay.remove();
+        };
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Annuler';
+        cancelBtn.className = 'button btn-secondary';
+        cancelBtn.onclick = () => modalOverlay.remove();
+        
+        actionsDiv.appendChild(confirmBtn);
+        actionsDiv.appendChild(cancelBtn);
+        modalBox.appendChild(actionsDiv);
+        modalOverlay.appendChild(modalBox);
+        document.body.appendChild(modalOverlay);
+
+        if (inputField) inputField.focus();
+    }
+
+
+    // --- Event Listeners for pilot inputs ---
+    pilotNameInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); pilotTimeInput.focus(); }
+    });
+    pilotTimeInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); addPilotBtn.click(); }
+    });
+    
+
+    // --- Initialisation ---
+    function initApp() {
+        const preferredTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+        applyTheme(preferredTheme);
+        
+        const storedSessionCollapseState = localStorage.getItem(SESSION_COLLAPSE_KEY) === 'false' ? false : true; // Default to collapsed (true)
+        applySessionCollapseState(storedSessionCollapseState);
+
+        loadSessions(); 
+        noResultsMessage.style.display = 'block';
+        raceStartSection.style.display = 'none';
+    }
+
+    initApp();
+
+</script>
+</body>
+</html>
