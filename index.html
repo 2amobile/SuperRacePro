@@ -2,8 +2,17 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SuperRace Pro</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <meta name="apple-mobile-web-app-title" content="SuperRace Pro">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://placehold.co/180x180/e53935/FFFFFF?text=SR&font=titilliumweb">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://placehold.co/152x152/e53935/FFFFFF?text=SR&font=titilliumweb">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://placehold.co/120x120/e53935/FFFFFF?text=SR&font=titilliumweb">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://placehold.co/76x76/e53935/FFFFFF?text=SR&font=titilliumweb">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://placehold.co/32x32/e53935/FFFFFF?text=SR&font=titilliumweb">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://placehold.co/16x16/e53935/FFFFFF?text=SR&font=titilliumweb">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Titillium+Web:wght@600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -58,6 +67,7 @@
             padding: 10px;
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent; /* Empêche le "flash" bleu sur les éléments cliquables sur mobile */
         }
 
         .app-container {
@@ -161,14 +171,14 @@
             display: flex;
             align-items: center;
         }
-        .section-title.collapsible-header { /* Specific for collapsible headers */
+        .section-title.collapsible-header { 
             justify-content: space-between;
             cursor: pointer;
-            margin-bottom: 0; /* Remove bottom margin if content is collapsed */
+            margin-bottom: 0; 
              transition: margin-bottom 0.3s ease-out;
         }
          .collapsible-section.expanded .section-title.collapsible-header {
-            margin-bottom: 20px; /* Add back margin when expanded */
+            margin-bottom: 20px; 
         }
 
         .section-title svg {
@@ -176,12 +186,12 @@
             fill: var(--primary-color);
         }
         .collapse-icon {
-            font-size: 1.5em; /* Make it more visible */
+            font-size: 1.5em; 
             font-weight: bold;
             transition: transform 0.3s ease;
-            padding: 0 5px; /* Clickable area */
+            padding: 0 5px; 
             line-height: 1;
-            user-select: none; /* Prevent text selection */
+            user-select: none; 
         }
         .collapsible-content {
             max-height: 0;
@@ -192,13 +202,13 @@
             border-top: 0px solid transparent;
         }
         .collapsible-section.expanded .collapsible-content {
-            max-height: 1000px; /* Adjust if content is very long */
+            max-height: 1000px; 
             padding-top: 20px; 
             margin-top: 15px;
             border-top: 1px solid var(--current-border);
         }
         .collapsible-section.expanded .collapse-icon {
-            transform: rotate(45deg); /* '+' to 'x' like */
+            transform: rotate(45deg); 
         }
 
 
@@ -275,7 +285,7 @@
             letter-spacing: 0.8px;
             width: 100%;
             margin-top: 10px;
-            gap: 8px; /* Espace pour icône */
+            gap: 8px; 
         }
         .button:active {
             transform: translateY(1px);
@@ -507,13 +517,12 @@
         .icon-settings, .icon-pilots, .icon-grid, .icon-rocket, 
         .icon-save, .icon-folder-open, .icon-file-plus, 
         .icon-trash, .icon-play, .icon-calculate, .icon-plus { 
-            display: inline-block; /* Ensure SVG takes space */
-            vertical-align: middle; /* Align with text */
+            display: inline-block; 
+            vertical-align: middle; 
         }
         .icon-settings, .icon-pilots, .icon-grid, .icon-rocket { width: 1.2em; height: 1.2em; }
         .icon-save, .icon-folder-open, .icon-file-plus, 
         .icon-trash, .icon-play, .icon-calculate, .icon-plus { width: 1em; height: 1em; }
-
 
     </style>
 </head>
@@ -594,7 +603,7 @@
                 </div>
                 <div class="input-group">
                     <label for="pilotTimeInput">Temps Superpole (meilleur tour) :</label>
-                    <input type="tel" id="pilotTimeInput" placeholder="Ex: 58.345 ou 1:02.123" inputmode="decimal">
+                    <input type="tel" id="pilotTimeInput" placeholder="Ex: 58.345, 1:02.123 ou 1.02.123" inputmode="decimal">
                 </div>
                 <button id="addPilotBtn" class="button btn-primary">
                     <svg class="icon-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
@@ -732,16 +741,22 @@
     function applySessionCollapseState(isCollapsed) {
         if (isCollapsed) {
             sessionManagementSectionEl.classList.remove('expanded');
-            sessionCollapseIcon.textContent = '+';
+            sessionCollapseIcon.innerHTML = `
+                <svg viewBox="0 0 16 16" fill="currentColor" style="width: 1em; height: 1em; vertical-align: middle;">
+                    <path fill-rule="evenodd" d="M8 1.5a.5.5 0 0 1 .5.5V7h5.5a.5.5 0 0 1 0 1H8.5v5.5a.5.5 0 0 1-1 0V8H2a.5.5 0 0 1 0-1h5.5V1.5A.5.5 0 0 1 8 1.5z"/>
+                </svg>`; // Plus Icon
         } else {
             sessionManagementSectionEl.classList.add('expanded');
-            sessionCollapseIcon.textContent = '−'; // Using a minus sign for expanded
+            sessionCollapseIcon.innerHTML = `
+                 <svg viewBox="0 0 16 16" fill="currentColor" style="width: 1em; height: 1em; vertical-align: middle; transform: rotate(45deg);">
+                    <path fill-rule="evenodd" d="M8 1.5a.5.5 0 0 1 .5.5V7h5.5a.5.5 0 0 1 0 1H8.5v5.5a.5.5 0 0 1-1 0V8H2a.5.5 0 0 1 0-1h5.5V1.5A.5.5 0 0 1 8 1.5z"/>
+                </svg>`; // X (rotated plus) Icon
         }
     }
     sessionHeader.addEventListener('click', () => {
         const isCurrentlyExpanded = sessionManagementSectionEl.classList.contains('expanded');
-        applySessionCollapseState(isCurrentlyExpanded); // Toggle: if expanded, collapse it (true)
-        localStorage.setItem(SESSION_COLLAPSE_KEY, isCurrentlyExpanded); // Save the new collapsed state
+        applySessionCollapseState(isCurrentlyExpanded); 
+        localStorage.setItem(SESSION_COLLAPSE_KEY, isCurrentlyExpanded); 
     });
 
 
@@ -943,26 +958,46 @@
         const remainingSeconds = (totalSeconds % 60);
         return minutes > 0 ? `${minutes}:${remainingSeconds.toFixed(3).padStart(6, '0')}` : remainingSeconds.toFixed(3);
     }
+
     function parseTime(timeStr) {
-        timeStr = timeStr.trim().replace(',', '.');
+        timeStr = timeStr.trim();
         let timeInSeconds;
-        if (timeStr.includes(':')) {
+
+        // Regex pour M.SS.mmm ou M,SS,mmm ou M:SS.mmm ou M:SS,mmm
+        // \d+ pour minutes, \d{1,2} pour secondes, \d{1,3} pour millisecondes
+        // [\.,:] comme séparateurs possibles entre minutes et secondes
+        // [\.,] comme séparateurs possibles entre secondes et millisecondes
+        const minuteSeparatorPattern = /^(\d+)[\.,:](\d{1,2})[\.,](\d{1,3})$/;
+        const match = timeStr.match(minuteSeparatorPattern);
+
+        if (match) {
+            const minutes = parseInt(match[1], 10);
+            const seconds = parseInt(match[2], 10);
+            const milliseconds = parseInt(match[3].padEnd(3, '0'), 10); // Assure 3 chiffres pour ms
+
+            if (!isNaN(minutes) && minutes >=0 && 
+                !isNaN(seconds) && seconds >= 0 && seconds < 60 && 
+                !isNaN(milliseconds) && milliseconds >= 0 && milliseconds < 1000) {
+                timeInSeconds = (minutes * 60) + seconds + (milliseconds / 1000);
+            }
+        } else if (timeStr.includes(':')) { 
             const parts = timeStr.split(':');
             if (parts.length === 2) {
                 const minutes = parseFloat(parts[0]);
-                const seconds = parseFloat(parts[1]);
-                if (!isNaN(minutes) && minutes >= 0 && !isNaN(seconds) && seconds >= 0 && seconds < 60) {
-                   timeInSeconds = (minutes * 60) + seconds;
+                const secondsWithMs = parseFloat(parts[1].replace(',', '.')); 
+                if (!isNaN(minutes) && minutes >= 0 && !isNaN(secondsWithMs) && secondsWithMs >= 0 && secondsWithMs < 60) {
+                   timeInSeconds = (minutes * 60) + secondsWithMs;
                 }
             }
-        } else {
-            timeInSeconds = parseFloat(timeStr);
+        } else { 
+            timeInSeconds = parseFloat(timeStr.replace(',', '.'));
         }
+
         if (!isNaN(timeInSeconds) && timeInSeconds > 0) {
             pilotMessageArea.style.display = 'none'; 
             return timeInSeconds;
         } else {
-            showPilotMessage("Format temps invalide. Utilisez 'SS.ms' ou 'M:SS.ms'.");
+            showPilotMessage("Format temps: M:SS.mmm, SS.mmm ou M.SS.mmm / M,SS,mmm.");
             return NaN;
         }
     }
@@ -1000,8 +1035,8 @@
     function clearResultsTable() {
         resultsTableBody.innerHTML = '';
         noResultsMessage.style.display = 'block';
-        raceStartSection.style.display = 'none'; 
         resetRaceAssistant(); 
+        // Ne pas cacher raceStartSection ici, resetRaceAssistant s'en charge si besoin
     }
 
     calculateGridBtn.addEventListener('click', () => {
@@ -1053,18 +1088,20 @@
         clearInterval(raceStartInterval);
         isRaceProcedureActive = false; 
         masterStartRaceBtn.innerHTML = `
-            <svg class="icon-play" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+            <svg class="icon-play" viewBox="0 0 16 16" fill="currentColor"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
             Lancer la Procédure de Départ
         `;
         masterStartRaceBtn.disabled = false;
 
-        if (departureTimes.length > 0) {
+        if (departureTimes.length > 0 && raceStartSection.style.display === 'block') { 
             currentStartingPilotDisplay.textContent = `Prêt pour: ${departureTimes[0].name}`;
             countdownTimerDisplay.textContent = "0.000 s";
             raceStartMessage.textContent = "Cliquez sur 'Lancer la Procédure' pour commencer.";
         } else {
             currentStartingPilotDisplay.textContent = "Aucun pilote";
-            // raceStartSection.style.display = 'none'; // This is handled by clearResultsTable
+            countdownTimerDisplay.textContent = "0.000 s";
+            raceStartMessage.textContent = "Calculez la grille d'abord.";
+            raceStartSection.style.display = 'none'; // Hide if no departure times
         }
     }
 
@@ -1081,19 +1118,16 @@
         isRaceProcedureActive = true; 
         
         masterStartRaceBtn.innerHTML = `
-            <svg class="icon-play" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+            <svg class="icon-play" viewBox="0 0 16 16" fill="currentColor"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
             Relancer la Procédure
         `;
-        masterStartRaceBtn.disabled = true; 
+        // masterStartRaceBtn.disabled = true; // Keep enabled for restart
 
         currentStartingPilotDisplay.textContent = `AU DÉPART: ${departureTimes[0].name}`;
         countdownTimerDisplay.textContent = "GO!"; 
         
         setTimeout(() => { 
-            if (!isRaceProcedureActive) {
-                 masterStartRaceBtn.disabled = false; // Ensure re-enabled if stopped during GO!
-                 return;
-            }
+            if (!isRaceProcedureActive) return; 
 
             if (departureTimes.length > 1) { 
                 raceStartMessage.textContent = `Préparation pour ${departureTimes[1].name}...`;
@@ -1111,11 +1145,10 @@
             resetRaceAssistant();
             return;
         }
-         if (pilotIndexToStart >= departureTimes.length) { // Should not happen if logic is correct before call
+         if (pilotIndexToStart >= departureTimes.length) { 
             resetRaceAssistant(); 
             return;
         }
-
 
         const pilotToStartData = departureTimes[pilotIndexToStart];
         countdownTime = pilotToStartData.incrementalDelay;
@@ -1239,7 +1272,7 @@
         const preferredTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
         applyTheme(preferredTheme);
         
-        const storedSessionCollapseState = localStorage.getItem(SESSION_COLLAPSE_KEY) === 'false' ? false : true; // Default to collapsed (true)
+        const storedSessionCollapseState = localStorage.getItem(SESSION_COLLAPSE_KEY) === 'false' ? false : true; 
         applySessionCollapseState(storedSessionCollapseState);
 
         loadSessions(); 
