@@ -6,15 +6,15 @@
     <title>SuperRace Pro</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <meta name="apple-mobile-web-app-title" content="SuperRace Pro">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SuperRace Pro">
     
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"> 
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="shortcut icon" href="favicon.ico">
 
     <meta name="theme-color" content="#e53935">
-
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Titillium+Web:wght@600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -70,8 +70,8 @@
             padding: 10px;
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
-            -webkit-tap-highlight-color: transparent; /* Empêche le "flash" bleu sur les éléments cliquables sur mobile */
-            -webkit-text-size-adjust: 100%; /* Empêche le zoom automatique du texte sur iOS */
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-text-size-adjust: 100%; 
             text-size-adjust: 100%;
         }
 
@@ -89,20 +89,23 @@
         }
 
         .app-header {
-            background-color: var(--secondary-color);
+            background-color: var(--secondary-color); 
             color: white;
-            padding: 15px 20px;
+            padding: 10px 15px; 
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-height: 60px; /* Augmenté pour un logo plus grand */
         }
-        .app-header h1 {
-            font-family: 'Titillium Web', sans-serif;
-            font-size: 1.8em;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .app-header img#appHeaderLogo { 
+            max-height: 40px; /* Augmenté pour mobile */
+            width: auto;      
+            display: block; 
         }
+        .app-header h1 { 
+            display: none; 
+        }
+
 
         /* Toggle Mode Sombre */
         .theme-switch-wrapper {
@@ -176,14 +179,14 @@
             display: flex;
             align-items: center;
         }
-        .section-title.collapsible-header { /* Specific for collapsible headers */
+        .section-title.collapsible-header { 
             justify-content: space-between;
             cursor: pointer;
-            margin-bottom: 0; /* Remove bottom margin if content is collapsed */
+            margin-bottom: 0; 
              transition: margin-bottom 0.3s ease-out;
         }
          .collapsible-section.expanded .section-title.collapsible-header {
-            margin-bottom: 20px; /* Add back margin when expanded */
+            margin-bottom: 20px; 
         }
 
         .section-title svg {
@@ -191,12 +194,12 @@
             fill: var(--primary-color);
         }
         .collapse-icon {
-            font-size: 1.5em; /* Make it more visible */
+            font-size: 1.5em; 
             font-weight: bold;
             transition: transform 0.3s ease;
-            padding: 0 5px; /* Clickable area */
+            padding: 0 5px; 
             line-height: 1;
-            user-select: none; /* Prevent text selection */
+            user-select: none; 
         }
         .collapsible-content {
             max-height: 0;
@@ -207,13 +210,13 @@
             border-top: 0px solid transparent;
         }
         .collapsible-section.expanded .collapsible-content {
-            max-height: 1000px; /* Adjust if content is very long */
+            max-height: 1000px; 
             padding-top: 20px; 
             margin-top: 15px;
             border-top: 1px solid var(--current-border);
         }
         .collapsible-section.expanded .collapse-icon {
-            transform: rotate(45deg); /* '+' to 'x' like */
+            transform: rotate(45deg); 
         }
 
 
@@ -497,7 +500,8 @@
         @media (min-width: 768px) {
             body { padding: 20px; }
             .app-container { padding: 0; }
-            .app-header h1 { font-size: 2em; }
+            .app-header h1 { display: none; } 
+            .app-header img#appHeaderLogo { max-height: 50px; } /* Augmenté pour desktop */
             .main-content { padding: 30px 40px; }
             .section { padding: 25px; margin-bottom: 30px; }
             .section-title { font-size: 1.6em; }
@@ -535,7 +539,8 @@
 
     <div class="app-container">
         <header class="app-header">
-            <h1>SuperRace Pro</h1>
+            <img id="appHeaderLogo" src="logo-superracepro-header.png" alt="SuperRace Pro Logo">
+            <h1 style="display:none;">SuperRace Pro</h1> 
             <div class="theme-switch-wrapper">
                 <label class="theme-switch" for="themeToggleCheckbox">
                     <input type="checkbox" id="themeToggleCheckbox">
@@ -726,7 +731,7 @@
     const sessionCollapseIcon = document.getElementById('sessionCollapseIcon');
 
     const svgIconPlay = `<svg class="icon-play" viewBox="0 0 16 16" fill="currentColor"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>`;
-    const svgIconRestart = `<svg class="icon-play" viewBox="0 0 16 16" fill="currentColor"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>`; // Placeholder, idealement une icone de redemarrage
+    const svgIconRestart = `<svg class="icon-play" viewBox="0 0 16 16" fill="currentColor"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>`; // Idéalement, une icône de redémarrage ici
 
     // --- Theme Management ---
     function applyTheme(theme) {
@@ -797,7 +802,6 @@
         numLapsInput.value = currentSession.laps;
         displayPilotsUI(); 
         clearResultsTable();
-        // raceStartSection.style.display = 'none'; // Let clearResultsTable handle resetRaceAssistant
     }
 
     function loadSessionData(sessionData) {
@@ -970,30 +974,26 @@
         timeStr = timeStr.trim();
         let timeInSeconds;
 
-        // Regex: M.SS.mmm or M,SS,mmm (dot or comma as main separators)
         const minuteSeparatorPattern = /^(\d+)[\.,](\d{1,2})[\.,](\d{1,3})$/;
-        // Regex: M:SS.mmm (colon then dot for ms) or M:SS,mmm (colon then comma for ms)
-        const colonSeparatorPattern = /^(\d+):(\d{1,2})[\.,](\d{1,3})$/;
-        // Regex: M:SS (no milliseconds)
-        const colonOnlyPattern = /^(\d+):(\d{1,2})$/;
-
+        const colonAndSeparatorPattern = /^(\d+):(\d{1,2})[\.,](\d{1,3})$/;
+        const colonOnlyPattern = /^(\d+):(\d{1,2})$/; // M:SS
 
         let match = timeStr.match(minuteSeparatorPattern);
-        if (match) {
+        if (match) { // Format M.SS.mmm ou M,SS,mmm
             const minutes = parseInt(match[1], 10);
             const seconds = parseInt(match[2], 10);
-            const milliseconds = parseInt(match[3].padEnd(3, '0'), 10);
+            const milliseconds = parseInt(match[3].padEnd(3,'0').substring(0,3), 10); // Ensure 3 digits for ms
             if (!isNaN(minutes) && minutes >=0 && 
                 !isNaN(seconds) && seconds >= 0 && seconds < 60 && 
                 !isNaN(milliseconds) && milliseconds >= 0 && milliseconds < 1000) {
                 timeInSeconds = (minutes * 60) + seconds + (milliseconds / 1000);
             }
         } else {
-            match = timeStr.match(colonSeparatorPattern);
-            if (match) {
+            match = timeStr.match(colonAndSeparatorPattern);
+            if (match) { // Format M:SS.mmm ou M:SS,mmm
                 const minutes = parseInt(match[1], 10);
                 const seconds = parseInt(match[2], 10);
-                const milliseconds = parseInt(match[3].padEnd(3, '0'), 10);
+                const milliseconds = parseInt(match[3].padEnd(3,'0').substring(0,3), 10);
                  if (!isNaN(minutes) && minutes >=0 && 
                     !isNaN(seconds) && seconds >= 0 && seconds < 60 && 
                     !isNaN(milliseconds) && milliseconds >= 0 && milliseconds < 1000) {
@@ -1001,13 +1001,13 @@
                 }
             } else {
                  match = timeStr.match(colonOnlyPattern);
-                 if (match) {
+                 if (match) { // Format M:SS
                     const minutes = parseInt(match[1], 10);
                     const seconds = parseInt(match[2], 10);
                     if (!isNaN(minutes) && minutes >= 0 && !isNaN(seconds) && seconds >= 0 && seconds < 60) {
                         timeInSeconds = (minutes * 60) + seconds;
                     }
-                 } else if (timeStr.includes(':')) { // Original M:SS.mmm with potentially a dot or comma in seconds part
+                 } else if (timeStr.includes(':')) { // Ancien format M:SS.mmm avec . ou , dans la partie secondes
                     const parts = timeStr.split(':');
                     if (parts.length === 2) {
                         const minutes = parseFloat(parts[0]);
@@ -1016,12 +1016,11 @@
                            timeInSeconds = (minutes * 60) + secondsWithMs;
                         }
                     }
-                } else { // SS.mmm or SS,mmm
+                } else { // Format SS.mmm ou SS,mmm
                     timeInSeconds = parseFloat(timeStr.replace(',', '.'));
                 }
             }
         }
-
 
         if (!isNaN(timeInSeconds) && timeInSeconds > 0) {
             pilotMessageArea.style.display = 'none'; 
@@ -1127,7 +1126,9 @@
             currentStartingPilotDisplay.textContent = "Aucun pilote";
             countdownTimerDisplay.textContent = "0.000 s";
             raceStartMessage.textContent = "Calculez la grille d'abord.";
-            raceStartSection.style.display = 'none'; 
+            if (departureTimes.length === 0) { 
+                 raceStartSection.style.display = 'none'; 
+            }
         }
     }
 
@@ -1137,14 +1138,13 @@
 
         if (departureTimes.length === 0) {
             raceStartMessage.textContent = "Calculez la grille d'abord pour lancer la procédure.";
-            resetRaceAssistant(); // Ensures button is in initial state
-            return;
+            return; // Ne pas modifier le bouton si pas de grille
         }
 
         isRaceProcedureActive = true; 
         
-        masterStartRaceBtn.innerHTML = `${svgIconRestart || svgIconPlay} Relancer la Procédure`; // Update text
-        // masterStartRaceBtn.disabled = false; // Explicitly ensure it's enabled for restart clicks
+        masterStartRaceBtn.innerHTML = `${svgIconRestart || svgIconPlay} Relancer la Procédure`;
+        masterStartRaceBtn.disabled = false; // Toujours activé pour relancer
 
         currentStartingPilotDisplay.textContent = `AU DÉPART: ${departureTimes[0].name}`;
         countdownTimerDisplay.textContent = "GO!"; 
@@ -1165,7 +1165,6 @@
 
     function startCountdown(pilotIndexToStart) { 
         if (!isRaceProcedureActive) { 
-            // resetRaceAssistant(); // Not needed here, the click on masterStart would call it.
             return;
         }
          if (pilotIndexToStart >= departureTimes.length) { 
@@ -1299,8 +1298,7 @@
         applySessionCollapseState(storedSessionCollapseState);
 
         loadSessions(); 
-        noResultsMessage.style.display = 'block';
-        raceStartSection.style.display = 'none';
+        clearResultsTable(); 
     }
 
     initApp();
